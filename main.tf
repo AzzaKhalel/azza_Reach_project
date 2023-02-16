@@ -65,46 +65,23 @@ resource "aws_ecs_task_definition" "my_first_task" {
 }
 resource "aws_vpc" "Reachvpc" {
   cidr_block = var.cidr_block_vpc
-
-  tags = {
-    Env  = "production"
-    Name = "Reachvpc"
-  }
 }
 resource "aws_subnet" "Reachsubnet1" {
   availability_zone       = var.az1 
   cidr_block              = var.cidr_block_subnet1
   map_public_ip_on_launch = true
-
-  tags = {
-    Env  = "production"
-    Name = "Reachsubnet"
-  }
-
   vpc_id = aws_vpc.Reachvpc.id  
 }
 resource "aws_subnet" "Reachsubnet2" {
   availability_zone       = var.az2 
   cidr_block              = var.cidr_block_subnet2
   map_public_ip_on_launch = true
-
-  tags = {
-    Env  = "production"
-    Name = "Reachsubnet"
-  }
-
   vpc_id = aws_vpc.Reachvpc.id  
 }
 resource "aws_subnet" "Reachsubnet3" {
   availability_zone       = var.az3 
   cidr_block              = var.cidr_block_subnet3
   map_public_ip_on_launch = true
-
-  tags = {
-    Env  = "production"
-    Name = "Reachsubnet"
-  }
-
   vpc_id = aws_vpc.Reachvpc.id  
 }
 
@@ -138,7 +115,7 @@ resource "aws_ecs_service" "my_first_service" {
   load_balancer {
     target_group_arn = "${aws_lb_target_group.target_group.arn}" # Referencing our target group
     container_name   = "${aws_ecs_task_definition.my_first_task.family}"
-    container_port   = 3000 # Specifying the container port
+    container_port   = 80 # Specifying the container port
   }
 }
 resource "aws_security_group" "load_balancer_security_group" {

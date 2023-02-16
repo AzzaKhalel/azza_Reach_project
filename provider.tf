@@ -7,11 +7,14 @@ terraform {
   }
 }
 #to locate the tfstate file remotly
-backend "S3" {
+/*backend "S3" {
   bucket = "mybucket"
   key = "ReachProject/state.tfstate"
   region = var.region
-}
+}*/
 provider "aws" {
   #you should export your AWS credentials on your local machine by "aws configure" command
+  #access_key = ""
+  #secret_key = ""
+  #region = ""
 }

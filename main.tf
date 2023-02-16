@@ -219,7 +219,7 @@ resource "aws_db_instance" "db_instance" {
 }
 
 resource "null_resource" "setup_db" {
-  depends_on = ["aws_db_instance.db_instance"] #wait for the db to be ready
+  depends_on = [aws_db_instance.db_instance] #wait for the db to be ready
   provisioner "local-exec" {
     command = "mysql -u ${aws_db_instance.db_instance.username} -p${var.password} -h ${aws_db_instance.db_instance.endpoint} < file.sql"
   }

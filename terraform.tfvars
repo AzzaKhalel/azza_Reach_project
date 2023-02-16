@@ -7,7 +7,7 @@ region     = "us-east-1"
 az1 = "us-east-1a"
 az2 = "us-east-1b"
 az3 = "us-east-1c"
-keypair_name = "Azza-key"
+#keypair_name = ""
 #access_key = ""
 #secret_key = ""
 

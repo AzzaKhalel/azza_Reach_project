@@ -50,7 +50,7 @@ resource "aws_ecs_task_definition" "my_first_task" {
          { "name" : "USER", "value" : "${aws_db_instance.db_instance.username}" },
          { "name" : "PASSWORD", "value" : "${var.password}" },
          { "name" : "HOST", "value" :  "${aws_db_instance.db_instance.endpoint}"},
-         { "name" : "DATABASE", "value" : "${aws_db_instance.db_instance.db}" }
+         { "name" : "DATABASE", "value" : "${aws_db_instance.db_instance.db_name}" }
         }
       ]
       
@@ -157,7 +157,7 @@ resource "aws_security_group" "load_balancer_security_group" {
   }
 }
 resource "aws_alb" "application_load_balancer" {
-  name               = "myapp_LB" # Naming our load balancer
+  name               = "myappLB" # Naming our load balancer
   load_balancer_type = "application"
   subnets = [ 
     aws_subnet.Reachsubnet1.id,
@@ -214,7 +214,7 @@ resource "aws_db_instance" "db_instance" {
   password             = var.password
   parameter_group_name = var.parameter_group_name
   db_subnet_group_name = aws_db_subnet_group.db-subnet-group.name
-  availability_zone = var.az
+  availability_zone = var.az1
   apply_immediately = true  
 }
 
@@ -230,6 +230,13 @@ resource "aws_acm_certificate" "cert" {
   subject_alternative_names = ["*.${var.domain_name}"]
   validation_method         = "DNS"
 }
+resource "aws_route53_zone" "hosted_zone" {
+  name = var.domain_name
+
+  vpc {
+    vpc_id = aws_vpc.Reachvpc.id 
+  }
+}
 resource "aws_route53_record" "certvalidation" {
   for_each = {
     for d in aws_acm_certificate.cert.domain_validation_options : d.domain_name => {
@@ -243,7 +250,7 @@ resource "aws_route53_record" "certvalidation" {
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = data.aws_route53_zone.hosted_zone.zone_id
+  zone_id         = aws_route53_zone.hosted_zone.zone_id
 }
 resource "aws_acm_certificate_validation" "certvalidation" {
   certificate_arn         = aws_acm_certificate.cert.arn
@@ -252,7 +259,7 @@ resource "aws_acm_certificate_validation" "certvalidation" {
 # creating A record for domain:
 resource "aws_route53_record" "websiteurl" {
   name    = var.domain_name
-  zone_id = data.aws_route53_zone.hosted_zone.zone_id
+  zone_id = aws_route53_zone.hosted_zone.zone_id
   type    = "A"
   alias {
     name                   = aws_cloudfront_distribution.cf_dist.domain_name
@@ -299,11 +306,6 @@ resource "aws_cloudfront_distribution" "cf_dist" {
     minimum_protocol_version = "TLSv1.2_2018"
   }
 }
-
-
-
-  
-
 
 
 
